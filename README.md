@@ -1,4 +1,4 @@
-# Clara Manuscript Dating
+# Multi-Modal Manuscript Dating
 ## Multimodal manuscript dating of the St. Clara corpus - code for a Master Thesis Project
 Work in progress; will be updated to work with custom inputs.
 Takes as input a list of documents containing transcriptions of charters (but can be any type of document in principle), as well as stroke-width transformed images of handwritten documents.
