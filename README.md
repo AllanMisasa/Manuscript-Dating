@@ -1,6 +1,7 @@
 # Multi-Modal Manuscript Dating
 ## Multimodal manuscript dating of the St. Clara corpus - code for a Master Thesis Project
-Work in progress; will be updated to work with custom inputs.
+Work in progress; will be updated to work with custom inputs. Only works on the St. Clara Dataset as described in [Guldkorpus](https://github.com/Clara-Kloster/Guldkorpus).  
+
 Takes as input a list of documents containing transcriptions of charters (but can be any type of document in principle), as well as stroke-width transformed images of handwritten documents.
 * Performs TF-IDF vectorization on the input documents, and returns each document represented by TF-IDF vectors.
 * Identifies each handwritten character and extracts them as square 32x32 images - each charter is then represented as x character images.
