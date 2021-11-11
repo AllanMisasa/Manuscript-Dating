@@ -33,7 +33,7 @@ def read_images(paths):
     return images
 
 
-def entropy_patches(image, patch_size, neurons):
+def entropy_patches(image, patch_size):
     # _, binary = cv.threshold(image, 10, 255, cv.THRESH_BINARY_INV)
     patches = []
     contours, _ = cv.findContours(image, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
@@ -43,13 +43,13 @@ def entropy_patches(image, patch_size, neurons):
         if skimage.measure.shannon_entropy(square) > 2:
             square = square.flatten()
             patches.append(square)
+    return patches
 
+
+def soms(patches, neurons):
     som = MiniSom(x=10, y=10, input_len=neurons, sigma=0.1, learning_rate=0.2)
     som.random_weights_init(patches)
     starting_weights = som.get_weights().copy()
     som.train_random(patches, neurons)
     qnt = som.quantization(patches)
     return qnt
-
-
-
