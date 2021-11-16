@@ -1,6 +1,7 @@
 import os
 import re
 import argparse
+from pandas.core.frame import DataFrame
 import skimage.measure
 import cv2 as cv
 import numpy as np
@@ -18,6 +19,7 @@ from sklearn.feature_extraction.image import extract_patches_2d
 from sklearn.metrics import roc_curve, auc, accuracy_score, f1_score
 
 
+# Needs generalization
 files = []
 pattern = "*r.jpg.jpg"  # Search for recto of all folios
 main_path = "D:\SktClaraRes"
@@ -29,27 +31,34 @@ for (dirpath, dirnames, filenames) in os.walk(main_path):
 
 # Loads images from list of paths
 def read_images(paths):
-    images = [cv.imread(i, 0) for i in paths]
+    images = [cv.imread(i, 0) for i in paths] # Read each path in array-like object into list of binary images
     return images
 
 
-def entropy_patches(image, patch_size):
+def entropy_patches(image, patch_size, entropy_limit):
     # _, binary = cv.threshold(image, 10, 255, cv.THRESH_BINARY_INV)
     patches = []
-    contours, _ = cv.findContours(image, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv.findContours(image, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE) # Follows contours, extracting every coordinate of contours
     for contour in contours:
-        x, y, w, h = cv.boundingRect(contour)
-        square = image[x:x + patch_size, y:y + patch_size]
-        if skimage.measure.shannon_entropy(square) > 2:
-            square = square.flatten()
+        x, y, w, h = cv.boundingRect(contour) # Finds each letter by bounding contours
+        square = image[x:x + patch_size, y:y + patch_size] # Extracts each letter, but maintains a specific patch size
+        if skimage.measure.shannon_entropy(square) > entropy_limit: # Keeps patches iff they carry enough information according to Shannon
+            square = square.flatten() # Flattens the images to 1D so they are prepared as direct input to convolutional operations
             patches.append(square)
     return patches
 
 
-def soms(patches, neurons):
-    som = MiniSom(x=10, y=10, input_len=neurons, sigma=0.1, learning_rate=0.2)
-    som.random_weights_init(patches)
-    starting_weights = som.get_weights().copy()
+def soms(patches, neurons, w, h):
+    som = MiniSom(x=w, y=h, input_len=neurons, sigma=0.1, learning_rate=0.2) # Defines the neural network (Kohonen self-organizing map)
+    som.random_weights_init(patches) # Initialize weights
+    starting_weights = som.get_weights().copy() # Copy the weights to prepare initial 
     som.train_random(patches, neurons)
     qnt = som.quantization(patches)
     return qnt
+
+
+def train_test_split(data, test_percent):
+    split_indices =  np.random.random_integers(0, range(len(data)))
+    train = split_indices(min(range(split_indices)), range(len(split_indices)) * 1 - test_percent)
+    test = split_indices(range(len(split_indices))*test_percent, max(range(len(split_indices))))
+    return train, test
