@@ -31,11 +31,11 @@ for (dirpath, dirnames, filenames) in os.walk(main_path):
 
 # Loads images from list of paths
 def read_images(paths):
-    images = [cv.imread(i, 0) for i in paths] # Read each path in array-like object into list of binary images
+    images = [cv.imread(i, 0) for i in paths] # Read each path in array-like object into list of grey-scale images
     return images
 
 
-def entropy_patches(image, patch_size, entropy_limit):
+def entropy_patches(image,  entropy_limit, patch_size=10):
     # _, binary = cv.threshold(image, 10, 255, cv.THRESH_BINARY_INV)
     patches = []
     contours, _ = cv.findContours(image, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE) # Follows contours, extracting every coordinate of contours
@@ -48,8 +48,8 @@ def entropy_patches(image, patch_size, entropy_limit):
     return patches
 
 
-def soms(patches, neurons, w, h):
-    som = MiniSom(x=w, y=h, input_len=neurons, sigma=0.1, learning_rate=0.2) # Defines the neural network (Kohonen self-organizing map)
+def soms(patches, neurons, width, height, sigma=0.1, learning_rate=0.2): # width and height has no default, only because we want separate one-call full-functionality functions and modifiable functions
+    som = MiniSom(x=width, y=height, input_len=neurons, sigma=sigma, learning_rate=learning_rate) # Defines the neural network (Kohonen self-organizing map)
     som.random_weights_init(patches) # Initialize weights
     starting_weights = som.get_weights().copy() # Copy the weights to prepare initial 
     som.train_random(patches, neurons)
@@ -62,3 +62,10 @@ def train_test_split(data, test_percent):
     train = split_indices(min(range(split_indices)), range(len(split_indices)) * 1 - test_percent)
     test = split_indices(range(len(split_indices))*test_percent, max(range(len(split_indices))))
     return train, test
+
+def full_auto_train(starting_input_path): # Takes only input of 
+    paths = []
+    for (dirpath, dirnames, filenames) in os.walk(starting_input_path):
+        for name in filenames:
+                paths.append(os.path.join(dirpath, name))
+    images = read_images(paths)
