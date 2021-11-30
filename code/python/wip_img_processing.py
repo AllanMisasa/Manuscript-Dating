@@ -63,9 +63,13 @@ def train_test_split(data, test_percent):
     test = split_indices(range(len(split_indices))*test_percent, max(range(len(split_indices))))
     return train, test
 
+'''
+Just an example to illustrate the fully automatic classifier with stock parameters, and 
+
 def full_auto_train(starting_input_path): # Takes only input of 
     paths = []
     for (dirpath, dirnames, filenames) in os.walk(starting_input_path):
         for name in filenames:
                 paths.append(os.path.join(dirpath, name))
     images = read_images(paths)
+ '''
